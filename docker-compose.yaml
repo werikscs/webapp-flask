@@ -1,0 +1,9 @@
+services:
+  app:
+    container_name: webapp-flask
+    image: webapp-flask-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
