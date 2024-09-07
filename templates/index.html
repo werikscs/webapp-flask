@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{url_for('static',filename='css/output.css')}}" rel="stylesheet">
+    <title>Classificador de Imagens</title>
+</head>
+<body class="bg-cover" style="background-image: url('{{ url_for('static', filename='images/background.png') }}'); background-cover;">
+    <div class="container mx-auto py-4">
+        <h1 class="text-center text-2xl font-bold">Classificador de Imagens</h1>
+        
+        <form action="/" method="post" enctype="multipart/form-data" class="text-center my-4">
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit" name="classify" class="bg-green-300 hover:bg-green-400 text-gray-800 font-bold py-2 px-4 rounded shadow-md">
+                Classificar Imagem
+            </button>
+        </form>
+
+        <!-- Exibe a imagem mais recente classificada -->
+        {% if image_data %}
+            <div class="flex flex-col justify-center items-center my-6">
+                <div class="bg-[#DFEADD] p-6 rounded-lg shadow-lg flex justify-center items-center flex-col">
+                    <img src="data:image/png;base64,{{ image_data }}" alt="Imagem Classificada" class="rounded-lg shadow-md max-w-[300px] h-auto">
+                    {% if classification_result %}
+                        <h3 class="text-center text-xl font-bold mt-4">{{ classification_result }}</h3>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Verifica se há imagens no histórico para exibir a barra -->
+        {% if historico_imagens|length > 1 %}
+            <!-- Barra de miniaturas com histórico de imagens -->
+            <div class="bg-[#DFEADD] p-6 rounded-lg shadow-lg flex justify-center items-center flex-row overflow-x-auto space-x-4 mt-10 max-w-[70%] mx-auto scroll-snap-type-x">
+                {% for item in historico_imagens[:-1] %} 
+                    <div class="flex-shrink-0 rounded-lg border-2 p-1 flex flex-col items-center justify-center scroll-snap-align-start">
+                        <img src="data:image/png;base64,{{ item.image_data }}" class="h-32 w-32 rounded-lg object-cover" alt="Imagem Classificada">
+                        <span class="block text-center text-sm mt-2 font-bold">{{ item.raça }} Conf: {{ item.confiança }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            <script>
+                // Ajusta o scroll para sempre mostrar a última imagem
+                const scrollContainer = document.querySelector('.overflow-x-auto');
+                scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+            </script>
+        {% endif %}
+    </div>
+</body>
+</html>
